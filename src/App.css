@@ -28,6 +28,10 @@
   color: #61dafb;
 }
 
+.df-messenger-chat-background-color{
+  background: red !important;
+}
+
 @keyframes App-logo-spin {
   from {
     transform: rotate(0deg);
