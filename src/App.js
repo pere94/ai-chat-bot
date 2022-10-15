@@ -9,6 +9,7 @@ import ListItemText from "@mui/material/ListItemText";
 import Collapse from "@mui/material/Collapse";
 import ExpandLess from "@mui/icons-material/ExpandLess";
 import ExpandMore from "@mui/icons-material/ExpandMore";
+import BasicModal from "./components/PayModal";
 
 
 function App() {
@@ -26,15 +27,17 @@ function App() {
   };
   const [pedido, setPedido] = React.useState(pedido_pizza);
   const [open, setOpen] = React.useState(true);
+  const [finPedido, setFinPedido] = React.useState(false);
 
   const handleClick = () => {
     setOpen(!open);
   };
 
+  let AgregoYaRenderizado = [];
   const dfMessenger = document.querySelector("df-messenger");
   dfMessenger.addEventListener("df-response-received", function (event) {
     // Handle event
-    console.log(event.detail.response.queryResult.parameters);
+    // console.log(event.detail.response.queryResult.parameters);
     // console.log(event.detail.response.queryResult.queryText);
     const response = event.detail.response.queryResult.parameters;
 
@@ -80,7 +83,38 @@ function App() {
       })
     }
 
+    if(response.cant_queso) {
+      setPedido({
+        ...pedido,
+        cant_queso: response.cant_queso
+      })
+    }
+
+    if(response.agregos_extra) {
+        setPedido({
+          ...pedido,
+          ingredientes: [...pedido.ingredientes, response.agregos_extra]
+        })
+    }
+
+    if(response.event_agregos) {
+      if (response.event_agregos === "reset agregos") {
+        setPedido({
+          ...pedido,
+          ingredientes: pedido_pizza.ingredientes
+        })
+        AgregoYaRenderizado = new Array([]);
+      } 
+      if (response.event_agregos === "listo") {
+        setFinPedido(true);
+        console.log("🚀 ~ file: App.js ~ line 107 ~ response.event_agregos", response.event_agregos);
+      } 
+
+    }
+
   });
+
+  
 
   return (
     <div className="App">
@@ -132,16 +166,27 @@ function App() {
           <ListItemText primary="Ingredientes o Agregos:" />
           {open ? <ExpandLess /> : <ExpandMore />}
         </ListItemButton>
+
         <Collapse in={open} timeout="auto" unmountOnExit>
           <List component="div" disablePadding>
-            <ListItemButton sx={{ pl: 4 }}>
-              <ListItemText primary="Starred" />
-            </ListItemButton>
+            {pedido.ingredientes.map((ingredient, index) => {
+              if (!AgregoYaRenderizado.includes(ingredient)) {
+                AgregoYaRenderizado.push(ingredient);
+                return (
+                <ListItemButton key={`Agregos-${ingredient}-${index}`} sx={{ pl: 4 }}>
+                  <ListItemText primary={`${pedido.ingredientes.filter(item => item === ingredient).length} ${ingredient}`} />
+                </ListItemButton>)
+              } else return (<React.Fragment key={`Agregos-${ingredient}-${index}`}></React.Fragment>)
+              
+            })}
           </List>
         </Collapse>
       </List>
+      {finPedido && <BasicModal pedido={pedido} finPedido={finPedido} setFinPedido={setFinPedido}/>}
     </div>
   );
 }
 
 export default App;
+
+
