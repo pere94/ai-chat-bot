@@ -5,6 +5,12 @@ body {
     sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  width: 100vw;
+  height: 100vh;
+  background: url("https://img.freepik.com/free-photo/top-view-pepperoni-pizza-sliced-into-six-slices_141793-2157.jpg?w=996&t=st=1665777128~exp=1665777728~hmac=505f638c8fa8e7ff132306f907ddb7ec1065480316e5d820d6712081d20eb684");
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
 }
 
 code {
